@@ -22,6 +22,12 @@ I want to make it usable with any given site as well; where you put in a URL tha
 
 ---
 
+## Files
+
+**bmcrawlv3.py** - This is all you need to run it.
+**bookmarks.html** - The bookmarks file I used to test.
+**newlinks_0.html** - The result of running the program on the bookmarks file.
+
 ## Usage
 
 1. Download the .py file.
