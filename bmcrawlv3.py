@@ -4,7 +4,7 @@ import requests
 from requests.exceptions import ConnectionError
 import webbrowser
 
-def input_handler(filename):
+def bm_input_handler(filename):
     with open(filename, 'r') as f:
         html = f.read()
     
@@ -13,7 +13,23 @@ def input_handler(filename):
     
     return urls
 
-bad_links = ['facebook.com', 'twitter.com', 'instagram.com', 'mailto:']
+def url_input_handler():
+    urls = []
+
+    #for as long as the user wants to add URLs
+    while True:
+        url = input('Enter a full URL (include http://) --> ')
+        #if user is all done
+        if not url.strip():
+            break
+        else:
+            url_tuple = (url, url, 'User Input')
+            urls.append(url_tuple)
+    
+    #send back usable data
+    return urls
+
+bad_links = ['facebook.com', 'twitter.com', 'instagram.com', 'mailto:', 'wiki']
 
 def scrape(html, from_title):
 
@@ -21,8 +37,14 @@ def scrape(html, from_title):
 
     soup = BeautifulSoup(html, 'html.parser')
 
-    for link in soup.find_all('a'):
+    for i, link in enumerate(soup.find_all('a')):
+        
         link_url = link.get('href')
+        
+        if i >= 50:
+            print(link_url + ' has too many links.')
+            break
+        
         if link_url == None \
         or any(substring in link_url for substring in bad_links) \
         or '//' not in link_url:
@@ -33,7 +55,7 @@ def scrape(html, from_title):
 
 
 def crawler(start_urls, depth=1):
-    found_urls = [] #list of lists
+    found_urls = []
 
     for n in range(depth):
         print(f'Crawling at depth {n}...')
@@ -90,11 +112,22 @@ def output_handler(urls, number):
 
 
 if __name__ == '__main__':
+
     depth = int(input('How deep? 1 is good, and 2 is plenty. --> '))
 
-    bm = 'bookmarks.html'
-    bm_urls = input_handler(bm)
-    found_urls = crawler(bm_urls, depth)
+    #ask user to choose between bookmarks.html or URL input
+    input_type = input('Bookmarks (b) or URLs (u)? --> ')
+    
+    #if user wants to input URLs
+    if input_type.lower() == 'u':
+        #run url input handler
+        start_urls = url_input_handler()
+    else:
+        bm = 'bookmarks.html'
+        start_urls = bm_input_handler(bm)
+    
+    #crawl URLs and output to list of tuples
+    found_urls = crawler(start_urls, depth)
 
     for i, urls_list in enumerate(found_urls):
         output_handler(urls_list, i)
