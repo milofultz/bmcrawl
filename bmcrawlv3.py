@@ -31,12 +31,10 @@ def url_input_handler():
     #send back usable data
     return urls
 
-bad_links = ['facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'mailto:', 'wiki']
-
 def scrape(html, from_title, from_url=None):
 
     url_list = []
-
+    bad_links = ['facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'mailto:', 'wiki']
     soup = BeautifulSoup(html, 'html.parser')
 
     for i, link in enumerate(soup.find_all('a')):
@@ -74,6 +72,7 @@ def crawler(start_urls, depth=1):
         start_urls = new_urls
 
     print('Crawl completed!')
+
     return found_urls
 
 
@@ -100,7 +99,6 @@ def getpage(url):
 
 
 def chrome(address):
-    """ Opens given URL in Chrome. """
     webbrowser.get("open -a /Applications/Google\ Chrome.app %s").open(address)
 
 
@@ -122,7 +120,6 @@ def output_handler(urls, number):
     chrome(f'newlinks_{number}.html')
 
 def remove_duplicates(lst): 
-    #Removes exact copies
     lst = [t for t in (set(tuple(i) for i in lst))]
     
     existing_urls = set()
@@ -144,15 +141,12 @@ if __name__ == '__main__':
     #ask user to choose between bookmarks.html or URL input
     input_type = input('Bookmarks (b) or URLs (u)? --> ')
     
-    #if user wants to input URLs
     if input_type.lower() == 'u':
-        #run url input handler
         start_urls = url_input_handler()
     else:
         bm = 'bookmarks.html'
         start_urls = bm_input_handler(bm)
     
-    #crawl URLs and output to list of tuples
     found_urls = crawler(start_urls, depth)
 
     for i, urls_list in enumerate(found_urls):
